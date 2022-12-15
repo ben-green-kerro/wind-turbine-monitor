@@ -7,4 +7,4 @@ def read():
     return data
 while True:
     value = read()
-    print(value) # printing the value
+    print(value)
