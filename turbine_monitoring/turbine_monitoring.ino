@@ -1,10 +1,12 @@
 #include <SoftwareSerial.h>
+#include <ArduinoJson.h>
+
 #define SSerialRX        10  //Serial Receive pin
 #define SSerialTX        11  //Serial Transmit pin
 #define SSerialTxControl 3   //RS485 Direction control
 #define Pin13LED         13
-SoftwareSerial RS485Serial(SSerialRX, SSerialTX); // RX, TX
 
+SoftwareSerial RS485Serial(SSerialRX, SSerialTX); // RX, TX
 
 double highestpower = 0.0;
 double highestcurrent = 0.0;
@@ -22,8 +24,6 @@ void setup() {
   pinMode(A0, INPUT);
   // Start the built-in serial port, probably to Serial Monitor
   Serial.begin(115200);
-  Serial.println("SerialRemote");  // Can be ignored
-  Serial.println(timetospeed);  // Can be ignored
 
   pinMode(Pin13LED, OUTPUT);
 
@@ -64,12 +64,12 @@ void loop() {
   }
 
   double myspeed = get_speed();
-  Serial.print("windspeed:"); Serial.print(myspeed); Serial.print(", ");
-  //  Serial.print("analoginput:"); Serial.print(value); Serial.print(", ");
-  //  Serial.print("resistance:"); Serial.print(resistance); Serial.print(", ");
-  Serial.print("voltage:"); Serial.print(voltage * 11.0); Serial.print(", ");
-  //  Serial.print("current:"); Serial.print(current); Serial.print(", ");
-  //  Serial.print("Power:"); Serial.print(power); Serial.print(", ");
-  //  Serial.print("windspeed:"); Serial.print(power); Serial.print(", ");
-  Serial.println();
+  
+  StaticJsonDocument<200> doc;
+
+  doc["WSpd"] = myspeed;
+  doc["V1"] = (voltage * 11.0);
+  // Uncomment this line and add the correct voltage calc to send it to the pi.
+  // doc["V2"] = (voltage * 11.0);
+  serializeJson(doc,Serial);
 }
